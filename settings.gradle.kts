@@ -20,4 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "blog-netflix-logo"
-include(":app")
+
+include(":netflix-logo")
+include(":sample")
