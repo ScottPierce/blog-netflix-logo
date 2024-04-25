@@ -20,15 +20,20 @@ object NetflixLogo {
     const val ASPECT_RATIO = 1377 / 2500f // Measurements taken off of an image
 
     val COLOR_RED = Color(0xFFE50914)
-    internal val COLOR_RED_DARK = Color(0xFFB20710)
-    internal val COLOR_SHADOW = Color(0x21000000)
+    val COLOR_RED_DARK = Color(0xFFB20710)
+    val COLOR_SHADOW = Color(0x21000000)
     internal const val INTRO_ANIMATION_MILLIS = 550
 }
 
+/**
+ * Draws the Netflix Logo, enforcing an aspect ratio of [NetflixLogo.ASPECT_RATIO].
+ *
+ * Control the size of this Composable by setting a `width` or `height`.
+ */
 @Composable
 fun NetflixLogo(
     animated: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val drawPercent: Float =
         if (animated) {
