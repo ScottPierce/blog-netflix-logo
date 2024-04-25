@@ -49,9 +49,6 @@ fun NetflixLogo(
                 // The Netflix animation uses what appears to be a Linear Interpolation,
                 // so lets do the same.
                 animationSpec = tween(NetflixLogo.INTRO_ANIMATION_MILLIS, easing = LinearEasing),
-                finishedListener = {
-                    animateToPercent = if (it <= 0f) 1f else 0f
-                }
             )
 
             percent

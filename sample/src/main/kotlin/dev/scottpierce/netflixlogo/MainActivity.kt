@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     var drawLogo: Boolean by remember { mutableStateOf(false) }
 
                     LaunchedEffect(Unit) {
-                        // Wait 500 millis before animating the logo in
+                        // Wait before animating the logo in
                         delay(1.seconds)
                         drawLogo = true
                     }
@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     if (drawLogo) {
                         NetflixLogo(
                             animated = true,
-                            modifier = Modifier.width(300.dp)
+                            modifier = Modifier.width(150.dp)
                         )
                     }
                 }
