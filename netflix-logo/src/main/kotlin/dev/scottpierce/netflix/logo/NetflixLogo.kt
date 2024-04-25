@@ -30,6 +30,30 @@ fun NetflixLogo(
     animated: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val drawPercent: Float =
+        if (animated) {
+            var animateToPercent by remember { mutableFloatStateOf(0f) }
+
+            LaunchedEffect(Unit) {
+                animateToPercent = 1f
+            }
+
+            val percent by animateFloatAsState(
+                targetValue = animateToPercent,
+                label = "Netflix Logo",
+                // The Netflix animation uses what appears to be a Linear Interpolation,
+                // so lets do the same.
+                animationSpec = tween(NetflixLogo.INTRO_ANIMATION_MILLIS, easing = LinearEasing),
+                finishedListener = {
+                    animateToPercent = if (it <= 0f) 1f else 0f
+                }
+            )
+
+            percent
+        } else {
+            1f
+        }
+
     Canvas(
         modifier = modifier
             .aspectRatio(NetflixLogo.ASPECT_RATIO)
@@ -40,7 +64,7 @@ fun NetflixLogo(
             },
     ) {
         drawNetflixN(
-            drawPercent = 1f, // TODO replace with animating percent later
+            drawPercent = drawPercent,
             drawShadow = true,
         )
     }
