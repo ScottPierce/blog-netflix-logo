@@ -10,32 +10,23 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 
 private const val NETFLIX_LOGO_STROKE_WIDTH_PERCENT = 494 / 1377f // Measured from an image
-private const val STROKE_1_PERCENT_COMPLETE = 1 / 3f
-private const val STROKE_2_PERCENT_COMPLETE = 2 / 3f
-private const val STROKE_3_PERCENT_COMPLETE = 1f
+private const val STROKE_1_PERCENT_COMPLETE = 1 / 3f // 1/3 of the intro animation
+private const val STROKE_2_PERCENT_COMPLETE = 2 / 3f // 2/3 of the intro animation
+private const val STROKE_3_PERCENT_COMPLETE = 1f // 3/3 of the intro animation
 
 fun DrawScope.drawNetflixN(drawPercent: Float, drawShadow: Boolean) {
     val strokeWidth = size.width * NETFLIX_LOGO_STROKE_WIDTH_PERCENT
 
-    // Calculate animation values
-    val stroke1DrawPercent: Float = if (drawPercent >= STROKE_1_PERCENT_COMPLETE) {
-        1f
-    } else {
-        drawPercent / STROKE_1_PERCENT_COMPLETE
-    }
-    val stroke2DrawPercent: Float  = if (drawPercent >= STROKE_2_PERCENT_COMPLETE) {
-        1f
-    } else {
-        val amountToDraw = (drawPercent - STROKE_1_PERCENT_COMPLETE).coerceAtLeast(0f)
+    val stroke1DrawPercent: Float = (drawPercent / STROKE_1_PERCENT_COMPLETE).coerceIn(0f, 1f)
+    val stroke2DrawPercent: Float  = run {
+        val amountToDraw = (drawPercent - STROKE_1_PERCENT_COMPLETE)
         val stroke2Size = STROKE_2_PERCENT_COMPLETE - STROKE_1_PERCENT_COMPLETE
-        amountToDraw / stroke2Size
+        (amountToDraw / stroke2Size).coerceIn(0f, 1f)
     }
-    val stroke3DrawPercent: Float  = if (drawPercent >= STROKE_3_PERCENT_COMPLETE) {
-        1f
-    } else {
-        val amountToDraw = (drawPercent - STROKE_2_PERCENT_COMPLETE).coerceAtLeast(0f)
+    val stroke3DrawPercent: Float  = run {
+        val amountToDraw = (drawPercent - STROKE_2_PERCENT_COMPLETE)
         val stroke3Size = STROKE_3_PERCENT_COMPLETE - STROKE_2_PERCENT_COMPLETE
-        amountToDraw / stroke3Size
+        (amountToDraw / stroke3Size).coerceIn(0f, 1f)
     }
 
     // The bottom of the netflix logo has a clipped arc at the bottom
