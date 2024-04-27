@@ -1,13 +1,19 @@
 package dev.scottpierce.netflix.logo
 
+import android.graphics.BlurMaskFilter
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ClipOp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.NativePaint
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 
 private const val NETFLIX_LOGO_STROKE_WIDTH_PERCENT = 494 / 1377f // Measured from an image
 private const val STROKE_1_PERCENT_COMPLETE = 1 / 3f // 1/3 of the intro animation
@@ -89,22 +95,45 @@ private fun DrawScope.drawNetflixNStroke2(
         // - The blend mode only works if the calling DrawScope is being drawn in a separate
         //   layer, via the modifier call:
         //   graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-        drawPath(
-            path = Path().apply {
-                val shadowStrokeWidth = size.width / 2.1f
-                val drawWidth = (size.width - shadowStrokeWidth) * drawPercent
+        drawIntoCanvas { canvas ->
+            // It's important that all of our moving values scale based on the size of the drawing.
+            // All of their values should be based on the strokeWidth.
+            val shadowXInset = strokeWidth * 0.15f
+            val shadowXOutset = strokeWidth * 0.15f
+            val shadowStrokeWidth = strokeWidth * 0.2f
+            val shadowBlurRadius = strokeWidth * 0.15f
 
-                moveTo(x = 0f, y = 0f) // Top left
-                lineTo(x = shadowStrokeWidth, y = 0f) // Top right
-                lineTo(x = drawWidth + shadowStrokeWidth, y = drawHeight) // Bottom right
-                lineTo(x = drawWidth, y = drawHeight) // Bottom left
-                close() // Close the path to form a rhombus
-            },
-            color = NetflixLogo.COLOR_SHADOW,
-            // Use a blend mode to only draw the shadow on the rest of the N. Otherwise it
-            // looks odd with the shadow on the background.
-            blendMode = BlendMode.DstOut,
-        )
+            val shadowPaint = Paint().apply {
+                color = Color(0x66000000)
+                blendMode = BlendMode.SrcAtop
+                isAntiAlias = true
+                style = PaintingStyle.Stroke
+                this.strokeWidth = shadowStrokeWidth
+                val paint: NativePaint = asFrameworkPaint()
+                paint.maskFilter = BlurMaskFilter(shadowBlurRadius, BlurMaskFilter.Blur.NORMAL)
+            }
+
+            // Stroke 1 Shadow
+            run {
+                val topRight = Offset(x = strokeWidth + shadowXOutset, y = 0f)
+                val bottomRightX = topRight.x + ((size.width - topRight.x) * drawPercent) - shadowXInset
+                canvas.drawLine(
+                    p1 = topRight,
+                    p2 = Offset(x = bottomRightX, y = drawHeight),
+                    paint = shadowPaint
+                )
+            }
+
+            // Stroke 3 Shadow
+            run {
+                val x = 0f + ((size.width - strokeWidth - shadowXOutset) * drawPercent)
+                canvas.drawLine(
+                    p1 = Offset(x = 0f + shadowXInset, y = 0f), // Top left
+                    p2 = Offset(x = x, y = drawHeight), // Bottom left
+                    paint = shadowPaint,
+                )
+            }
+        }
     }
 
     drawPath(

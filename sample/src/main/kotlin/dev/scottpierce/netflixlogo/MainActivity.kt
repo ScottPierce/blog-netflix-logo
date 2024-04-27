@@ -3,7 +3,11 @@ package dev.scottpierce.netflixlogo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.LaunchedEffect
@@ -13,6 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import dev.scottpierce.netflix.logo.NetflixLogo
@@ -43,11 +50,32 @@ class MainActivity : ComponentActivity() {
                         drawLogo = true
                     }
 
-                    if (drawLogo) {
-                        NetflixLogo(
-                            animated = true,
-                            modifier = Modifier.width(150.dp)
-                        )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+//                        Box(
+//                            contentAlignment = Alignment.BottomCenter,
+//                            modifier = Modifier.weight(1f)
+//                        ) {
+//                            Image(
+//                                painterResource(id = R.drawable.netflix_symbol_official),
+//                                contentDescription = null,
+//                                modifier = Modifier.width(400.dp),
+//                                contentScale = ContentScale.FillWidth,
+//                            )
+//                        }
+
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            if (drawLogo) {
+                                NetflixLogo(
+                                    animated = true,
+                                    modifier = Modifier.width(150.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
