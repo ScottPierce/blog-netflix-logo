@@ -115,22 +115,22 @@ private fun DrawScope.drawNetflixNStroke2(
 
             // Stroke 1 Shadow
             run {
+                val x = 0f + ((size.width - strokeWidth - shadowXOutset) * drawPercent)
+                canvas.drawLine(
+                    p1 = Offset(x = 0f + shadowXInset, y = 0f), // Top left
+                    p2 = Offset(x = x, y = drawHeight), // Bottom left
+                    paint = shadowPaint,
+                )
+            }
+
+            // Stroke 3 Shadow
+            run {
                 val topRight = Offset(x = strokeWidth + shadowXOutset, y = 0f)
                 val bottomRightX = topRight.x + ((size.width - topRight.x) * drawPercent) - shadowXInset
                 canvas.drawLine(
                     p1 = topRight,
                     p2 = Offset(x = bottomRightX, y = drawHeight),
                     paint = shadowPaint
-                )
-            }
-
-            // Stroke 3 Shadow
-            run {
-                val x = 0f + ((size.width - strokeWidth - shadowXOutset) * drawPercent)
-                canvas.drawLine(
-                    p1 = Offset(x = 0f + shadowXInset, y = 0f), // Top left
-                    p2 = Offset(x = x, y = drawHeight), // Bottom left
-                    paint = shadowPaint,
                 )
             }
         }
