@@ -81,6 +81,9 @@ private fun DrawScope.drawNetflixNStroke1(
     )
 }
 
+// Storing drawing objects as singletons, like this, is safe as long as we're in drawing
+// environments limited to a single thread. This may create a race condition while drawing
+// Compose to images in testing environments.
 private val stroke2Path = Path()
 private val shadowPaint = Paint().apply {
     color = Color(0x66000000)
