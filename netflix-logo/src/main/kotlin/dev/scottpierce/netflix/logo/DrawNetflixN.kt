@@ -110,6 +110,7 @@ private fun DrawScope.drawNetflixNStroke2(
             val shadowBlurRadius = strokeWidth * 0.15f
 
             shadowPaint.strokeWidth = shadowStrokeWidth
+            // BlurMaskFilter is read-only, so we need to set it every frame in case the blur radius has changed
             shadowPaint.asFrameworkPaint().maskFilter =
                 BlurMaskFilter(shadowBlurRadius, BlurMaskFilter.Blur.NORMAL)
 
