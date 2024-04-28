@@ -75,7 +75,7 @@ private fun DrawScope.drawNetflixNStroke1(
     )
 }
 
-private val path = Path()
+private val stroke2Path = Path()
 
 private fun DrawScope.drawNetflixNStroke2(
     strokeWidth: Float,
@@ -108,7 +108,7 @@ private fun DrawScope.drawNetflixNStroke2(
     }
 
     drawPath(
-        path = path.apply {
+        path = stroke2Path.apply {
             val drawWidth = (size.width - strokeWidth) * drawPercent
 
             moveTo(x = 0f, y = 0f) // Top left
@@ -119,7 +119,7 @@ private fun DrawScope.drawNetflixNStroke2(
         },
         color = NetflixLogo.COLOR_RED,
     )
-    path.reset()
+    stroke2Path.reset()
 }
 
 private fun DrawScope.drawNetflixNStroke3(
