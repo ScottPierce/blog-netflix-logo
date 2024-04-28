@@ -81,7 +81,13 @@ private fun DrawScope.drawNetflixNStroke1(
     )
 }
 
-private val path = Path()
+private val stroke2Path = Path()
+private val shadowPaint = Paint().apply {
+    color = Color(0x66000000)
+    blendMode = BlendMode.SrcAtop
+    isAntiAlias = true
+    style = PaintingStyle.Stroke
+}
 
 private fun DrawScope.drawNetflixNStroke2(
     strokeWidth: Float,
@@ -103,15 +109,9 @@ private fun DrawScope.drawNetflixNStroke2(
             val shadowStrokeWidth = strokeWidth * 0.2f
             val shadowBlurRadius = strokeWidth * 0.15f
 
-            val shadowPaint = Paint().apply {
-                color = Color(0x66000000)
-                blendMode = BlendMode.SrcAtop
-                isAntiAlias = true
-                style = PaintingStyle.Stroke
-                this.strokeWidth = shadowStrokeWidth
-                val paint: NativePaint = asFrameworkPaint()
-                paint.maskFilter = BlurMaskFilter(shadowBlurRadius, BlurMaskFilter.Blur.NORMAL)
-            }
+            shadowPaint.strokeWidth = shadowStrokeWidth
+            shadowPaint.asFrameworkPaint().maskFilter =
+                BlurMaskFilter(shadowBlurRadius, BlurMaskFilter.Blur.NORMAL)
 
             // Stroke 1 Shadow
             run {
@@ -137,7 +137,7 @@ private fun DrawScope.drawNetflixNStroke2(
     }
 
     drawPath(
-        path = path.apply {
+        path = stroke2Path.apply {
             val drawWidth = (size.width - strokeWidth) * drawPercent
 
             moveTo(x = 0f, y = 0f) // Top left
@@ -148,7 +148,7 @@ private fun DrawScope.drawNetflixNStroke2(
         },
         color = NetflixLogo.COLOR_RED,
     )
-    path.reset()
+    stroke2Path.reset()
 }
 
 private fun DrawScope.drawNetflixNStroke3(
