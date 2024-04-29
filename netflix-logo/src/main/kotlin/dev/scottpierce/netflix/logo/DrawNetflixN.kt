@@ -7,7 +7,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.NativePaint
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
@@ -119,10 +118,10 @@ private fun DrawScope.drawNetflixNStroke2(
 
             // Stroke 1 Shadow
             run {
-                val x = 0f + ((size.width - strokeWidth - shadowXOutset) * drawPercent)
+                val bottomLeftX = 0f + ((size.width - strokeWidth - shadowXOutset) * drawPercent)
                 canvas.drawLine(
                     p1 = Offset(x = 0f + shadowXInset, y = 0f), // Top left
-                    p2 = Offset(x = x, y = drawHeight), // Bottom left
+                    p2 = Offset(x = bottomLeftX, y = drawHeight), // Bottom left
                     paint = shadowPaint,
                 )
             }
