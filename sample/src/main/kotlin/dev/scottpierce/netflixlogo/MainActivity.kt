@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import dev.scottpierce.netflix.logo.AnimationMode
 import dev.scottpierce.netflix.logo.NetflixLogo
 import dev.scottpierce.netflixlogo.theme.NetflixLogoTheme
 import kotlinx.coroutines.delay
@@ -71,8 +72,8 @@ class MainActivity : ComponentActivity() {
                         ) {
                             if (drawLogo) {
                                 NetflixLogo(
-                                    animated = true,
-                                    modifier = Modifier.width(150.dp)
+                                    modifier = Modifier.width(150.dp),
+                                    animation = AnimationMode.INTRO,
                                 )
                             }
                         }

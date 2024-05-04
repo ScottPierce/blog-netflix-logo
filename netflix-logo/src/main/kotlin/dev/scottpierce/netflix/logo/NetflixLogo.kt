@@ -21,8 +21,7 @@ object NetflixLogo {
 
     val COLOR_RED = Color(0xFFE50914)
     val COLOR_RED_DARK = Color(0xFFB20710)
-    val COLOR_SHADOW = Color(0x21000000)
-    internal const val INTRO_ANIMATION_MILLIS = 550
+    val COLOR_SHADOW = Color(0x66000000)
 }
 
 /**
@@ -32,42 +31,26 @@ object NetflixLogo {
  */
 @Composable
 fun NetflixLogo(
-    animated: Boolean,
     modifier: Modifier = Modifier,
+    animation: AnimationMode = AnimationMode.NONE,
 ) {
-    val drawPercent: Float =
-        if (animated) {
-            var animateToPercent by remember { mutableFloatStateOf(0f) }
-
-            LaunchedEffect(Unit) {
-                animateToPercent = 1f
-            }
-
-            val percent by animateFloatAsState(
-                targetValue = animateToPercent,
-                label = "Netflix Logo",
-                // The Netflix animation uses what appears to be a Linear Interpolation,
-                // so lets do the same.
-                animationSpec = tween(NetflixLogo.INTRO_ANIMATION_MILLIS, easing = LinearEasing),
-            )
-
-            percent
-        } else {
-            1f
-        }
+    val drawState = DrawManager.calculateDrawState(animation)
 
     Canvas(
         modifier = modifier
             .aspectRatio(NetflixLogo.ASPECT_RATIO)
             // Needs to be set so that the canvas is rendered in a separate layer,
-            // otherwise the clipped shadow is visible on the background.
+            // otherwise the clipped shadow is visible on the background as BlendMode won't work.
             .graphicsLayer {
                 compositingStrategy = CompositingStrategy.Offscreen
             },
     ) {
-        drawNetflixN(
-            drawPercent = drawPercent,
-            drawShadow = true,
-        )
+        drawNetflixN(drawState)
     }
+}
+
+enum class AnimationMode {
+    NONE,
+    INTRO,
+    INTRO_AND_OUTRO,
 }

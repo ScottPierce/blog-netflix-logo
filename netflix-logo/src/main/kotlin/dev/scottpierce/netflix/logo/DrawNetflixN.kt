@@ -6,8 +6,6 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ClipOp
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.NativePaint
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
@@ -16,36 +14,30 @@ import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 
 private const val NETFLIX_LOGO_STROKE_WIDTH_PERCENT = 494 / 1377f // Measured from an image
-private const val STROKE_1_PERCENT_COMPLETE = 1 / 3f // 1/3 of the intro animation
-private const val STROKE_2_PERCENT_COMPLETE = 2 / 3f // 2/3 of the intro animation
-private const val STROKE_3_PERCENT_COMPLETE = 1f // 3/3 of the intro animation
 
-fun DrawScope.drawNetflixN(drawPercent: Float, drawShadow: Boolean) {
+internal fun DrawScope.drawNetflixN(drawState: DrawState) {
     val strokeWidth = size.width * NETFLIX_LOGO_STROKE_WIDTH_PERCENT
-
-    val stroke1DrawPercent: Float = (drawPercent / STROKE_1_PERCENT_COMPLETE).coerceIn(0f, 1f)
-    val stroke2DrawPercent: Float  = run {
-        val amountToDraw = (drawPercent - STROKE_1_PERCENT_COMPLETE)
-        val stroke2Size = STROKE_2_PERCENT_COMPLETE - STROKE_1_PERCENT_COMPLETE
-        (amountToDraw / stroke2Size).coerceIn(0f, 1f)
-    }
-    val stroke3DrawPercent: Float  = run {
-        val amountToDraw = (drawPercent - STROKE_2_PERCENT_COMPLETE)
-        val stroke3Size = STROKE_3_PERCENT_COMPLETE - STROKE_2_PERCENT_COMPLETE
-        (amountToDraw / stroke3Size).coerceIn(0f, 1f)
-    }
 
     // The bottom of the netflix logo has a clipped arc at the bottom
     clipPath(path = bottomArcClipPath(), clipOp = ClipOp.Difference) {
-        drawNetflixNStroke1(strokeWidth = strokeWidth, drawPercent = stroke1DrawPercent)
-        drawNetflixNStroke3(strokeWidth = strokeWidth, drawPercent = stroke3DrawPercent)
+        when (val s = drawState.stroke1) {
+            Stroke1State.Off -> {}
+            is Stroke1State.Intro -> drawNetflixNStroke1(strokeWidth = strokeWidth, drawPercent = s.drawPercent)
+            is Stroke1State.Outro -> TODO()
+        }
+
+        when (val s = drawState.stroke3) {
+            Stroke3State.Off -> {}
+            is Stroke3State.Intro -> drawNetflixNStroke3(strokeWidth = strokeWidth, drawPercent = s.drawPercent)
+            is Stroke3State.Outro -> TODO()
+        }
 
         // Stroke 2 goes on top of the other strokes, so it's drawn last
-        drawNetflixNStroke2(
-            strokeWidth = strokeWidth,
-            drawPercent = stroke2DrawPercent,
-            drawShadow = drawShadow
-        )
+        when (val s = drawState.stroke2) {
+            Stroke2State.Off -> {}
+            is Stroke2State.Intro -> drawNetflixNStroke2(strokeWidth = strokeWidth, drawPercent = s.drawPercent)
+            is Stroke2State.Outro -> TODO()
+        }
     }
 }
 
@@ -86,7 +78,7 @@ private fun DrawScope.drawNetflixNStroke1(
 // Compose to images in testing environments where multiple threads can potentially be used.
 private val stroke2Path = Path()
 private val shadowPaint = Paint().apply {
-    color = Color(0x66000000)
+    color = NetflixLogo.COLOR_SHADOW
     blendMode = BlendMode.SrcAtop
     isAntiAlias = true
     style = PaintingStyle.Stroke
@@ -95,48 +87,45 @@ private val shadowPaint = Paint().apply {
 private fun DrawScope.drawNetflixNStroke2(
     strokeWidth: Float,
     drawPercent: Float,
-    drawShadow: Boolean,
 ) {
     val drawHeight = size.height * drawPercent
 
-    if (drawShadow) {
-        // Stroke 2 shadow
-        // - The blend mode only works if the calling DrawScope is being drawn in a separate
-        //   layer, via the modifier call:
-        //   graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-        drawIntoCanvas { canvas ->
-            // It's important that all of our moving values scale based on the size of the drawing.
-            // All of their values should be based on the strokeWidth.
-            val shadowXInset = strokeWidth * 0.15f
-            val shadowXOutset = strokeWidth * 0.15f
-            val shadowStrokeWidth = strokeWidth * 0.2f
-            val shadowBlurRadius = strokeWidth * 0.15f
+    // Stroke 2 shadow
+    // - The blend mode only works if the calling DrawScope is being drawn in a separate
+    //   layer, via the modifier call:
+    //   graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+    drawIntoCanvas { canvas ->
+        // It's important that all of our moving values scale based on the size of the drawing.
+        // All of their values should be based on the strokeWidth.
+        val shadowXInset = strokeWidth * 0.15f
+        val shadowXOutset = strokeWidth * 0.15f
+        val shadowStrokeWidth = strokeWidth * 0.2f
+        val shadowBlurRadius = strokeWidth * 0.15f
 
-            shadowPaint.strokeWidth = shadowStrokeWidth
-            // BlurMaskFilter is read-only, so we need to set it every frame in case the blur radius has changed
-            shadowPaint.asFrameworkPaint().maskFilter =
-                BlurMaskFilter(shadowBlurRadius, BlurMaskFilter.Blur.NORMAL)
+        shadowPaint.strokeWidth = shadowStrokeWidth
+        // BlurMaskFilter is read-only, so we need to set it every frame in case the blur radius has changed
+        shadowPaint.asFrameworkPaint().maskFilter =
+            BlurMaskFilter(shadowBlurRadius, BlurMaskFilter.Blur.NORMAL)
 
-            // Stroke 1 Shadow
-            run {
-                val x = 0f + ((size.width - strokeWidth - shadowXOutset) * drawPercent)
-                canvas.drawLine(
-                    p1 = Offset(x = 0f + shadowXInset, y = 0f), // Top left
-                    p2 = Offset(x = x, y = drawHeight), // Bottom left
-                    paint = shadowPaint,
-                )
-            }
+        // Stroke 1 Shadow
+        run {
+            val x = 0f + ((size.width - strokeWidth - shadowXOutset) * drawPercent)
+            canvas.drawLine(
+                p1 = Offset(x = 0f + shadowXInset, y = 0f), // Top left
+                p2 = Offset(x = x, y = drawHeight), // Bottom left
+                paint = shadowPaint,
+            )
+        }
 
-            // Stroke 3 Shadow
-            run {
-                val topRight = Offset(x = strokeWidth + shadowXOutset, y = 0f)
-                val bottomRightX = topRight.x + ((size.width - topRight.x) * drawPercent) - shadowXInset
-                canvas.drawLine(
-                    p1 = topRight,
-                    p2 = Offset(x = bottomRightX, y = drawHeight),
-                    paint = shadowPaint
-                )
-            }
+        // Stroke 3 Shadow
+        run {
+            val topRight = Offset(x = strokeWidth + shadowXOutset, y = 0f)
+            val bottomRightX = topRight.x + ((size.width - topRight.x) * drawPercent) - shadowXInset
+            canvas.drawLine(
+                p1 = topRight,
+                p2 = Offset(x = bottomRightX, y = drawHeight),
+                paint = shadowPaint
+            )
         }
     }
 
