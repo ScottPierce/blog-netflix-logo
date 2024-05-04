@@ -11,34 +11,39 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 private const val INTRO_ANIMATION_MILLIS = 550
+private const val OUTRO_ANIMATION_MILLIS = 550
+private const val INTRO_OUTRO_ANIMATION_MILLIS = INTRO_ANIMATION_MILLIS + OUTRO_ANIMATION_MILLIS
+
 private const val INTRO_STROKE_1_PERCENT_COMPLETE = 1 / 3f // 1/3 of the intro animation
 private const val INTRO_STROKE_2_PERCENT_COMPLETE = 2 / 3f // 2/3 of the intro animation
 private const val INTRO_STROKE_3_PERCENT_COMPLETE = 1f // 3/3 of the intro animation
 
+private val DRAW_STATE_NONE = DrawState(
+    stroke1 = Stroke1State.Off,
+    stroke2 = Stroke2State.Off,
+    stroke3 = Stroke3State.Off,
+)
+
+private val DRAW_STATE_INTRO_COMPLETED = DrawState(
+    stroke1 = Stroke1State.Intro(1f),
+    stroke2 = Stroke2State.Intro(1f),
+    stroke3 = Stroke3State.Intro(1f),
+)
+
 internal object DrawManager {
-    private val DRAW_STATE_NONE = DrawState(
-        stroke1 = Stroke1State.Off,
-        stroke2 = Stroke2State.Off,
-        stroke3 = Stroke3State.Off,
-    )
-
-    private val DRAW_STATE_INTRO_COMPLETED = DrawState(
-        stroke1 = Stroke1State.Intro(1f),
-        stroke2 = Stroke2State.Intro(1f),
-        stroke3 = Stroke3State.Intro(1f),
-    )
-
     @Composable
     fun calculateDrawState(animation: AnimationMode): DrawState {
-        return when (animation) {
-            AnimationMode.NONE -> DRAW_STATE_INTRO_COMPLETED
-            AnimationMode.INTRO -> calculateIntroDrawState()
-            AnimationMode.INTRO_AND_OUTRO -> TODO()
-        }
-    }
+        val durationMillis: Int = when (animation) {
+            AnimationMode.NONE -> return DRAW_STATE_INTRO_COMPLETED
+            AnimationMode.INTRO -> {
+                INTRO_ANIMATION_MILLIS
+            }
 
-    @Composable
-    private fun calculateIntroDrawState(): DrawState {
+            AnimationMode.INTRO_AND_OUTRO -> {
+                INTRO_OUTRO_ANIMATION_MILLIS
+            }
+        }
+
         var animateToPercent by remember { mutableFloatStateOf(0f) }
 
         LaunchedEffect(Unit) {
@@ -49,16 +54,38 @@ internal object DrawManager {
             targetValue = animateToPercent,
             label = "Netflix Logo",
             animationSpec = tween(
-                durationMillis = INTRO_ANIMATION_MILLIS,
+                durationMillis = durationMillis,
                 easing = LinearEasing
             ),
         )
 
-        return calculateIntroDrawState(drawPercent = drawPercent)
+        return when (animation) {
+            AnimationMode.NONE -> {
+                // Not necessary to have this branch in Kotlin 2.0
+                error("Not reachable")
+            }
+            AnimationMode.INTRO -> {
+                calculateIntroDrawState(drawPercent = drawPercent)
+            }
+            AnimationMode.INTRO_AND_OUTRO -> {
+                val animationMillis = INTRO_OUTRO_ANIMATION_MILLIS * drawPercent
+
+                if (animationMillis <= INTRO_ANIMATION_MILLIS) {
+                    val introAnimationPercent = INTRO_ANIMATION_MILLIS / INTRO_OUTRO_ANIMATION_MILLIS.toFloat()
+                    calculateIntroDrawState(drawPercent = drawPercent / introAnimationPercent)
+                } else {
+                    calculateOutroDrawState(drawPercent = drawPercent)
+                }
+            }
+        }
     }
 }
 
 private fun calculateIntroDrawState(drawPercent: Float): DrawState {
+    if (drawPercent == 0f) {
+        return DRAW_STATE_NONE
+    }
+
     val stroke1DrawPercent: Float = (drawPercent / INTRO_STROKE_1_PERCENT_COMPLETE)
         .coerceIn(0f, 1f)
     val stroke2DrawPercent: Float = run {
@@ -77,4 +104,8 @@ private fun calculateIntroDrawState(drawPercent: Float): DrawState {
         stroke2 = if (stroke2DrawPercent == 0f) Stroke2State.Off else Stroke2State.Intro(stroke2DrawPercent),
         stroke3 = if (stroke3DrawPercent == 0f) Stroke3State.Off else Stroke3State.Intro(stroke3DrawPercent),
     )
+}
+
+private fun calculateOutroDrawState(drawPercent: Float): DrawState {
+    return DRAW_STATE_NONE
 }

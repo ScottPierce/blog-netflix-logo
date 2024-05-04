@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
                             if (drawLogo) {
                                 NetflixLogo(
                                     modifier = Modifier.width(150.dp),
-                                    animation = AnimationMode.INTRO,
+                                    animation = AnimationMode.INTRO_AND_OUTRO,
                                 )
                             }
                         }
