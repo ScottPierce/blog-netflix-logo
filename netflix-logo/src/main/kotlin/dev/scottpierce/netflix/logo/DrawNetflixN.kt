@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import dev.scottpierce.netflix.logo.stroke3.drawStroke3
 
 private const val NETFLIX_LOGO_STROKE_WIDTH_PERCENT = 494 / 1377f // Measured from an image
 
@@ -26,11 +27,7 @@ internal fun DrawScope.drawNetflixN(drawState: DrawState) {
             is Stroke1State.Outro -> TODO()
         }
 
-        when (val s = drawState.stroke3) {
-            Stroke3State.Off -> {}
-            is Stroke3State.Intro -> drawNetflixNStroke3(strokeWidth = strokeWidth, drawPercent = s.drawPercent)
-            is Stroke3State.Outro -> TODO()
-        }
+        drawStroke3(strokeWidth, drawState.stroke3)
 
         // Stroke 2 goes on top of the other strokes, so it's drawn last
         when (val s = drawState.stroke2) {
@@ -142,19 +139,4 @@ private fun DrawScope.drawNetflixNStroke2(
         color = NetflixLogo.COLOR_RED,
     )
     stroke2Path.reset()
-}
-
-private fun DrawScope.drawNetflixNStroke3(
-    strokeWidth: Float,
-    drawPercent: Float,
-) {
-    val drawHeight = drawPercent * size.height
-    drawRect(
-        color = NetflixLogo.COLOR_RED_DARK,
-        topLeft = Offset(
-            x = size.width - strokeWidth,
-            y = size.height - drawHeight,
-        ),
-        size = Size(width = strokeWidth, height = drawHeight),
-    )
 }

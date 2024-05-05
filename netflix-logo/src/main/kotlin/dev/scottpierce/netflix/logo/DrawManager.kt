@@ -14,6 +14,11 @@ private const val INTRO_ANIMATION_MILLIS = 550
 private const val OUTRO_ANIMATION_MILLIS = 550
 private const val INTRO_OUTRO_ANIMATION_MILLIS = INTRO_ANIMATION_MILLIS + OUTRO_ANIMATION_MILLIS
 
+/** The percent of the intro animation of the whole intro, outro animation */
+private const val INTRO_ANIMATION_PERCENT: Float = INTRO_ANIMATION_MILLIS / INTRO_OUTRO_ANIMATION_MILLIS.toFloat()
+/** The percent of the outro animation of the whole intro, outro animation */
+private const val OUTRO_ANIMATION_PERCENT: Float = 1f - INTRO_ANIMATION_PERCENT
+
 private const val INTRO_STROKE_1_PERCENT_COMPLETE = 1 / 3f // 1/3 of the intro animation
 private const val INTRO_STROKE_2_PERCENT_COMPLETE = 2 / 3f // 2/3 of the intro animation
 private const val INTRO_STROKE_3_PERCENT_COMPLETE = 1f // 3/3 of the intro animation
@@ -68,13 +73,13 @@ internal object DrawManager {
                 calculateIntroDrawState(drawPercent = drawPercent)
             }
             AnimationMode.INTRO_AND_OUTRO -> {
-                val animationMillis = INTRO_OUTRO_ANIMATION_MILLIS * drawPercent
-
-                if (animationMillis <= INTRO_ANIMATION_MILLIS) {
-                    val introAnimationPercent = INTRO_ANIMATION_MILLIS / INTRO_OUTRO_ANIMATION_MILLIS.toFloat()
-                    calculateIntroDrawState(drawPercent = drawPercent / introAnimationPercent)
+                if (drawPercent <= INTRO_ANIMATION_PERCENT) {
+                    val introDrawPercent = drawPercent / INTRO_ANIMATION_PERCENT
+                    calculateIntroDrawState(drawPercent = introDrawPercent)
                 } else {
-                    calculateOutroDrawState(drawPercent = drawPercent)
+                    val outroDrawPercent = (drawPercent - INTRO_ANIMATION_PERCENT) / OUTRO_ANIMATION_PERCENT
+                    println("OUTRO PERCENT $outroDrawPercent")
+                    calculateOutroDrawState(drawPercent = outroDrawPercent)
                 }
             }
         }
@@ -107,5 +112,7 @@ private fun calculateIntroDrawState(drawPercent: Float): DrawState {
 }
 
 private fun calculateOutroDrawState(drawPercent: Float): DrawState {
-    return DRAW_STATE_NONE
+    return DRAW_STATE_INTRO_COMPLETED.copy(
+        stroke3 = Stroke3State.Outro(drawPercent),
+    )
 }
