@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.NativePaint
 import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import dev.scottpierce.netflix.logo.NetflixLogo
 import dev.scottpierce.netflix.logo.ui.RED_1
@@ -34,27 +35,28 @@ private val DRAW_ITEMS: List<DrawItem> = listOf(
     Line(w = 5f, color = RED_6),
     Space(w = 7f),
     Line(w = 10f, color = RED_1),
+    Space(w = 3f),
+    Line(w = 1f, color = RED_2),
+    Line(w = 4f, color = RED_3),
     Space(w = 4f),
-    Line(w = 4f, color = RED_2),
-    Space(w = 4f),
-    Line(w = 4f, color = RED_2),
-    Line(w = 6f, color = RED_3),
-    Line(w = 4f, color = RED_1),
-    Line(w = 5f, color = RED_4),
-    Line(w = 2f, color = RED_2),
-    Line(w = 2f, color = RED_3),
-    Line(w = 2f, color = RED_2),
+    Line(w = 4f, color = RED_5),
+    Line(w = 6f, color = RED_4),
+    Line(w = 4f, color = RED_3),
+    Line(w = 5f, color = RED_5),
+    Line(w = 2f, color = RED_5),
+    Line(w = 2f, color = RED_4),
+    Line(w = 2f, color = RED_5),
     Space(w = 2f),
     Line(w = 3f, color = RED_4),
     Space(w = 2f),
-    Line(w = 3f, color = RED_2),
+    Line(w = 3f, color = RED_3),
     Space(w = 4f),
-    Line(w = 2f, color = RED_1),
+    Line(w = 2f, color = RED_4),
     Space(w = 1f),
-    Line(w = 5f, color = RED_2, fadeStart = 0.80f),
-    Line(w = 6f, color = RED_1, fadeStart = 0.72f),
-    Line(w = 5f, color = RED_2, fadeStart = 0.67f),
-    Line(w = 10f, color = RED_1, fadeStart = 0.60f),
+    Line(w = 5f, color = RED_4, fadeStart = 0.70f),
+    Line(w = 6f, color = RED_5, fadeStart = 0.62f),
+    Line(w = 5f, color = RED_3, fadeStart = 0.57f),
+    Line(w = 10f, color = RED_4, fadeStart = 0.50f),
     Space(w = 1f),
     Line(w = 4f, color = RED_6),
     Space(w = 2f),
@@ -69,12 +71,12 @@ private val paint: Paint = Paint().apply {
     // Because we're drawing straight lines up and down, we don't need to pay the cost of
     // anti-aliasing.
     isAntiAlias = false
+    style = PaintingStyle.Fill
 }
 private val nativePaint: NativePaint = paint.asFrameworkPaint()
     .also {
-        it.maskFilter = BlurMaskFilter(2f, BlurMaskFilter.Blur.SOLID)
+        it.maskFilter = BlurMaskFilter(3f, BlurMaskFilter.Blur.NORMAL)
     }
-
 
 /**
  * For the decay animation, it comes in 2 parts. The first half comes with a thinning of the stroke

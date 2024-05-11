@@ -10,11 +10,11 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import dev.scottpierce.netflix.logo.AnimationMode
-import dev.scottpierce.netflix.logo.util.percentWindow
 
-private const val INTRO_ANIMATION_MILLIS = 550
-private const val OUTRO_ANIMATION_MILLIS = 1500
-private const val INTRO_OUTRO_ANIMATION_MILLIS = INTRO_ANIMATION_MILLIS + OUTRO_ANIMATION_MILLIS
+internal const val INTRO_ANIMATION_MILLIS = 550
+/** Takes 53 frames at 24 fps. */
+internal const val OUTRO_ANIMATION_MILLIS = (53 / 24f * 1000).toInt()
+internal const val INTRO_OUTRO_ANIMATION_MILLIS = INTRO_ANIMATION_MILLIS + OUTRO_ANIMATION_MILLIS
 
 /** The percent of the intro animation of the whole intro, outro animation */
 private const val INTRO_ANIMATION_PERCENT: Float = INTRO_ANIMATION_MILLIS / INTRO_OUTRO_ANIMATION_MILLIS.toFloat()
@@ -25,13 +25,13 @@ private const val INTRO_STROKE_1_PERCENT_COMPLETE = 1 / 3f // 1/3 of the intro a
 private const val INTRO_STROKE_2_PERCENT_COMPLETE = 2 / 3f // 2/3 of the intro animation
 private const val INTRO_STROKE_3_PERCENT_COMPLETE = 1f // 3/3 of the intro animation
 
-private val DRAW_STATE_NONE = DrawState(
+internal val DRAW_STATE_NONE = DrawState(
     stroke1 = Stroke1State.Off,
     stroke2 = Stroke2State.Off,
     stroke3 = Stroke3State.Off,
 )
 
-private val DRAW_STATE_INTRO_COMPLETED = DrawState(
+internal val DRAW_STATE_INTRO_COMPLETED = DrawState(
     stroke1 = Stroke1State.Intro(1f),
     stroke2 = Stroke2State.Intro(1f),
     stroke3 = Stroke3State.Intro(1f),
@@ -110,34 +110,5 @@ private fun calculateIntroDrawState(drawPercent: Float): DrawState {
         stroke1 = if (stroke1DrawPercent == 0f) Stroke1State.Off else Stroke1State.Intro(stroke1DrawPercent),
         stroke2 = if (stroke2DrawPercent == 0f) Stroke2State.Off else Stroke2State.Intro(stroke2DrawPercent),
         stroke3 = if (stroke3DrawPercent == 0f) Stroke3State.Off else Stroke3State.Intro(stroke3DrawPercent),
-    )
-}
-
-private fun calculateOutroDrawState(drawPercent: Float): DrawState {
-    return DRAW_STATE_INTRO_COMPLETED.copy(
-        stroke3 = calculateOutroStroke3State(drawPercent),
-    )
-}
-
-/** Takes 6 frames on a 24 fps video. */
-private const val DECAY_REVEAL_DURATION_STROKE_3_MILLIS = ((6 / 24f) * 1000).toInt()
-/** The size of the decay gradient, as a percent of the height. */
-private const val DECAY_REVEAL_SIZE_STROKE_3 = 0.4f
-private const val DECAY_REVEAL_TOP_STROKE_3 = 1f + DECAY_REVEAL_SIZE_STROKE_3
-private const val DECAY_REVEAL_WINDOW_STROKE_3_START = 0.1f
-private const val DECAY_REVEAL_WINDOW_STROKE_3_END: Float = DECAY_REVEAL_WINDOW_STROKE_3_START +
-        (DECAY_REVEAL_DURATION_STROKE_3_MILLIS / OUTRO_ANIMATION_MILLIS.toFloat())
-
-private fun calculateOutroStroke3State(drawPercent: Float): Stroke3State.Outro {
-    val stroke3DrawPercent = drawPercent.percentWindow(
-        start = DECAY_REVEAL_WINDOW_STROKE_3_START,
-        end = DECAY_REVEAL_WINDOW_STROKE_3_END,
-    )
-    val decayRevealTop = DECAY_REVEAL_TOP_STROKE_3 - (stroke3DrawPercent * DECAY_REVEAL_TOP_STROKE_3)
-
-    return Stroke3State.Outro(
-        drawPercent = stroke3DrawPercent,
-        decayRevealTop = decayRevealTop,
-        decayRevealBottom = decayRevealTop - DECAY_REVEAL_SIZE_STROKE_3,
     )
 }

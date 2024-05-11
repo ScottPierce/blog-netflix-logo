@@ -54,17 +54,17 @@ class MainActivity : ComponentActivity() {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-//                        Box(
-//                            contentAlignment = Alignment.BottomCenter,
-//                            modifier = Modifier.weight(1f)
-//                        ) {
-//                            Image(
-//                                painterResource(id = R.drawable.netflix_symbol_official),
-//                                contentDescription = null,
-//                                modifier = Modifier.width(400.dp),
-//                                contentScale = ContentScale.FillWidth,
-//                            )
-//                        }
+                        Box(
+                            contentAlignment = Alignment.BottomCenter,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Image(
+                                painterResource(id = R.drawable.netflix_symbol_official_decay),
+                                contentDescription = null,
+                                modifier = Modifier.width(200.dp),
+                                contentScale = ContentScale.FillWidth,
+                            )
+                        }
 
                         Box(
                             contentAlignment = Alignment.Center,
@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             if (drawLogo) {
                                 NetflixLogo(
-                                    modifier = Modifier.width(150.dp),
+                                    modifier = Modifier.width(200.dp),
                                     animation = AnimationMode.INTRO_AND_OUTRO,
                                 )
                             }
