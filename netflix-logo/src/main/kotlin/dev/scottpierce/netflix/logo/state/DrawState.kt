@@ -1,4 +1,4 @@
-package dev.scottpierce.netflix.logo
+package dev.scottpierce.netflix.logo.state
 
 import androidx.compose.runtime.Immutable
 
@@ -57,8 +57,17 @@ internal sealed interface Stroke3State {
     ) : Stroke3State
 
     @Immutable
-    @JvmInline
-    value class Outro(
+    data class Outro(
         val drawPercent: Float,
+        /**
+         * The top transparent part of the gradient for the removal of the intro stroke, revealing
+         * the outro stroke lines.
+         */
+        val decayRevealTop: Float,
+        /**
+         * The bottom solid part of the gradient for the removal of the intro stroke, revealing
+         * the outro stroke lines.
+         */
+        val decayRevealBottom: Float,
     ) : Stroke3State
 }

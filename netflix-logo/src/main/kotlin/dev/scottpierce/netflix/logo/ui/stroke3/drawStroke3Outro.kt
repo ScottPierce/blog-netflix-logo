@@ -1,25 +1,27 @@
-package dev.scottpierce.netflix.logo.stroke3
+package dev.scottpierce.netflix.logo.ui.stroke3
 
 import android.graphics.BlurMaskFilter
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.NativePaint
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import dev.scottpierce.netflix.logo.DrawItem
-import dev.scottpierce.netflix.logo.Line
-import dev.scottpierce.netflix.logo.RED_1
-import dev.scottpierce.netflix.logo.RED_2
-import dev.scottpierce.netflix.logo.RED_3
-import dev.scottpierce.netflix.logo.RED_4
-import dev.scottpierce.netflix.logo.RED_5
-import dev.scottpierce.netflix.logo.RED_6
-import dev.scottpierce.netflix.logo.Space
-import dev.scottpierce.netflix.logo.Stroke3State
-import dev.scottpierce.netflix.logo.WHITE_1
-import dev.scottpierce.netflix.logo.sumOfW
-import dev.scottpierce.netflix.logo.toArgbInt
+import dev.scottpierce.netflix.logo.NetflixLogo
+import dev.scottpierce.netflix.logo.ui.RED_1
+import dev.scottpierce.netflix.logo.ui.RED_2
+import dev.scottpierce.netflix.logo.ui.RED_3
+import dev.scottpierce.netflix.logo.ui.RED_4
+import dev.scottpierce.netflix.logo.ui.RED_5
+import dev.scottpierce.netflix.logo.ui.RED_6
+import dev.scottpierce.netflix.logo.state.Stroke3State
+import dev.scottpierce.netflix.logo.ui.WHITE_1
+import dev.scottpierce.netflix.logo.ui.DrawItem
+import dev.scottpierce.netflix.logo.ui.Line
+import dev.scottpierce.netflix.logo.ui.Space
+import dev.scottpierce.netflix.logo.ui.sumOfW
+import dev.scottpierce.netflix.logo.ui.toArgbInt
 
 /** This is a number that can be moved to scale the width of all the DrawItems. */
 private val DRAW_ITEMS: List<DrawItem> = listOf(
@@ -142,6 +144,20 @@ internal fun DrawScope.drawStroke3Outro(
         lastDrawnX += drawWidth
     }
 
-    // Animate gradient removal here.
-//    drawStroke3Intro(strokeWidth, drawPercent = 1f, Brush.verticalGradient())
+    topLayer(strokeWidth, state)
+}
+
+private fun DrawScope.topLayer(strokeWidth: Float, state: Stroke3State.Outro) {
+    val decayRevealTop = 1f - state.decayRevealTop
+    val decayRevealBottom = 1f - state.decayRevealBottom
+    drawRect(
+        brush = Brush.verticalGradient(
+            0f.coerceAtMost(decayRevealTop) to Color.Transparent,
+            decayRevealTop to Color.Transparent,
+            decayRevealBottom to NetflixLogo.COLOR_RED_DARK,
+            1f.coerceAtLeast(decayRevealBottom) to NetflixLogo.COLOR_RED_DARK,
+        ),
+        topLeft = Offset(x = size.width - strokeWidth, y = 0f),
+        size = Size(width = strokeWidth, height = size.height),
+    )
 }

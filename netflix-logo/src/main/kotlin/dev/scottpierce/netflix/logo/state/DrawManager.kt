@@ -1,4 +1,4 @@
-package dev.scottpierce.netflix.logo
+package dev.scottpierce.netflix.logo.state
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -9,9 +9,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import dev.scottpierce.netflix.logo.AnimationMode
+import dev.scottpierce.netflix.logo.util.percentWindow
 
 private const val INTRO_ANIMATION_MILLIS = 550
-private const val OUTRO_ANIMATION_MILLIS = 550
+private const val OUTRO_ANIMATION_MILLIS = 1500
 private const val INTRO_OUTRO_ANIMATION_MILLIS = INTRO_ANIMATION_MILLIS + OUTRO_ANIMATION_MILLIS
 
 /** The percent of the intro animation of the whole intro, outro animation */
@@ -113,6 +115,29 @@ private fun calculateIntroDrawState(drawPercent: Float): DrawState {
 
 private fun calculateOutroDrawState(drawPercent: Float): DrawState {
     return DRAW_STATE_INTRO_COMPLETED.copy(
-        stroke3 = Stroke3State.Outro(drawPercent),
+        stroke3 = calculateOutroStroke3State(drawPercent),
+    )
+}
+
+/** Takes 6 frames on a 24 fps video. */
+private const val DECAY_REVEAL_DURATION_STROKE_3_MILLIS = ((6 / 24f) * 1000).toInt()
+/** The size of the decay gradient, as a percent of the height. */
+private const val DECAY_REVEAL_SIZE_STROKE_3 = 0.4f
+private const val DECAY_REVEAL_TOP_STROKE_3 = 1f + DECAY_REVEAL_SIZE_STROKE_3
+private const val DECAY_REVEAL_WINDOW_STROKE_3_START = 0.1f
+private const val DECAY_REVEAL_WINDOW_STROKE_3_END: Float = DECAY_REVEAL_WINDOW_STROKE_3_START +
+        (DECAY_REVEAL_DURATION_STROKE_3_MILLIS / OUTRO_ANIMATION_MILLIS.toFloat())
+
+private fun calculateOutroStroke3State(drawPercent: Float): Stroke3State.Outro {
+    val stroke3DrawPercent = drawPercent.percentWindow(
+        start = DECAY_REVEAL_WINDOW_STROKE_3_START,
+        end = DECAY_REVEAL_WINDOW_STROKE_3_END,
+    )
+    val decayRevealTop = DECAY_REVEAL_TOP_STROKE_3 - (stroke3DrawPercent * DECAY_REVEAL_TOP_STROKE_3)
+
+    return Stroke3State.Outro(
+        drawPercent = stroke3DrawPercent,
+        decayRevealTop = decayRevealTop,
+        decayRevealBottom = decayRevealTop - DECAY_REVEAL_SIZE_STROKE_3,
     )
 }

@@ -12,7 +12,10 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import dev.scottpierce.netflix.logo.stroke3.drawStroke3
+import dev.scottpierce.netflix.logo.state.DrawState
+import dev.scottpierce.netflix.logo.state.Stroke1State
+import dev.scottpierce.netflix.logo.state.Stroke2State
+import dev.scottpierce.netflix.logo.ui.stroke3.drawStroke3
 
 private const val NETFLIX_LOGO_STROKE_WIDTH_PERCENT = 494 / 1377f // Measured from an image
 

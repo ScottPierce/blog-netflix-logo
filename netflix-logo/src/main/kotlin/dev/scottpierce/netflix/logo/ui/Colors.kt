@@ -1,4 +1,4 @@
-package dev.scottpierce.netflix.logo
+package dev.scottpierce.netflix.logo.ui
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,10 +1,10 @@
-package dev.scottpierce.netflix.logo.stroke3
+package dev.scottpierce.netflix.logo.ui.stroke3
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import dev.scottpierce.netflix.logo.NetflixLogo
-import dev.scottpierce.netflix.logo.Stroke3State
+import dev.scottpierce.netflix.logo.state.Stroke3State
 
 internal fun DrawScope.drawStroke3(
     strokeWidth: Float,
